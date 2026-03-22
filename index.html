@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lançamento de Notas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f3f4;
+            color: #2c3e50;
+        }
+
+        tbody tr {
+            transition: background-color 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="number"][readonly] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            font-weight: 600;
+            cursor: not-allowed;
+        }
+
+        .botoes {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button[type="reset"] {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        button[type="reset"]:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 6px;
+            }
+
+            input[type="number"] {
+                width: 60px;
+                padding: 6px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+        }
+
+        /* Estilo para campos inválidos */
+        input:invalid {
+            border-color: #e74c3c !important;
+            background-color: #ffeaea !important;
+        }
+
+        input:valid {
+            border-color: #27ae60 !important;
+        }
+    </style>
+    <script>
+        // Função para permitir apenas números e ponto decimal
+        function apenasNumeros(event) {
+            const tecla = event.which ? event.which : event.keyCode;
+            const valor = event.target.value;
+            
+            // Permite: backspace (8), delete (46), tab (9), enter (13), ponto (46)
+            // Permite números (48-57)
+            if (tecla === 8 || tecla === 46 || tecla === 9 || tecla === 13 || (tecla >= 48 && tecla <= 57)) {
+                // Verifica se já tem um ponto decimal
+                if (tecla === 46 && valor.includes('.')) {
+                    event.preventDefault();
+                    return false;
+                }
+                return true;
+            } else {
+                event.preventDefault();
+                return false;
+            }
+        }
+
+        // Função para validar o range
+        function validarRange(event) {
+            const campo = event.target;
+            const valor = parseFloat(campo.value);
+            const min = parseFloat(campo.min);
+            const max = parseFloat(campo.max);
+            
+            if (!isNaN(valor)) {
+                if (valor < min) campo.value = min;
+                if (valor > max) campo.value = max;
+            }
+        }
+
+        // Função para calcular a média automaticamente
+        function calcularMedia(aluno) {
+            const p1 = parseFloat(document.querySelector(`input[name="p1_${aluno}"]`).value) || 0;
+            const p2 = parseFloat(document.querySelector(`input[name="p2_${aluno}"]`).value) || 0;
+            const exame = parseFloat(document.querySelector(`input[name="exame_${aluno}"]`).value) || 0;
+            
+            let media = 0;
+            if (exame > 0) {
+                // Se houve exame, média = (p1 + p2 + exame) / 3
+                media = (p1 + p2 + exame) / 3;
+            } else {
+                // Se não houve exame, média = (p1 + p2) / 2
+                media = (p1 + p2) / 2;
+            }
+            
+            // Arredonda para 1 casa decimal
+            media = Math.round(media * 10) / 10;
+            
+            // Atualiza o campo da média
+            const campoMedia = document.querySelector(`input[name="media_${aluno}"]`);
+            campoMedia.value = media;
+        }
+
+        // Adicionar eventos quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Campos de notas (prova 1, prova 2, exame)
+            const camposNotas = document.querySelectorAll('input[type="number"][min="0"][max="10"]');
+            camposNotas.forEach(campo => {
+                campo.addEventListener('keypress', apenasNumeros);
+                campo.addEventListener('input', function(event) {
+                    validarRange(event);
+                    
+                    // Calcula a média quando uma nota é alterada
+                    const nomeCampo = event.target.name;
+                    if (nomeCampo.includes('p1_') || nomeCampo.includes('p2_') || nomeCampo.includes('exame_')) {
+                        const aluno = nomeCampo.split('_')[1];
+                        calcularMedia(aluno);
+                    }
+                });
+            });
+
+            // Campos de faltas
+            const camposFaltas = document.querySelectorAll('input[type="number"][min="0"][max="16"]');
+            camposFaltas.forEach(campo => {
+                campo.addEventListener('keypress', apenasNumeros);
+                campo.addEventListener('input', validarRange);
+            });
+
+            // Validação do formulário
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const camposObrigatorios = document.querySelectorAll('input[required], select[required]');
+                let valido = true;
+
+                camposObrigatorios.forEach(campo => {
+                    if (!campo.value || campo.value === '') {
+                        campo.style.borderColor = '#e74c3c';
+                        campo.style.backgroundColor = '#ffeaea';
+                        valido = false;
+                    } else {
+                        campo.style.borderColor = '';
+                        campo.style.backgroundColor = '';
+                    }
+                });
+
+                if (!valido) {
+                    event.preventDefault();
+                    alert('Por favor, preencha todos os campos obrigatórios!');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h2>LANÇAMENTO DE NOTAS</h2>
+    
+    <form action="/salvar-notas" method="POST">
+        <!-- Regra 1: Lista definida de disciplinas -->
+        <label for="disciplina"><strong>Selecione a disciplina</strong></label>
+        <select id="disciplina" name="disciplina" required>
+            <option value="intro_info">Introdução à informática</option>
+            <option value="ling_prog">Linguagens de Programação</option>
+            <option value="prog_comp" selected>Programação de Computadores</option>
+        </select>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome do aluno</th>
+                    <th>Prova 1</th>
+                    <th>Prova 2</th>
+                    <th>Exame</th>
+                    <th>Média</th>
+                    <th>Faltas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aluno 1: Joana da Silva -->
+                <tr>
+                    <td>Joana da Silva</td>
+                    <!-- Regra 2 e 5: min="0", max="10", required -->
+                    <td><input type="number" name="p1_joana" min="0" max="10" step="0.1" value="8.0" required></td>
+                    <td><input type="number" name="p2_joana" min="0" max="10" step="0.1" value="7.0" required></td>
+                    <td><input type="number" name="exame_joana" min="0" max="10" step="0.1"></td>
+                    <!-- Regra 3: readonly -->
+                    <td><input type="number" name="media_joana" value="7.5" readonly=""></td>
+                    <!-- Regra 4 e 5: min="0", max="16", required -->
+                    <td><input type="number" name="faltas_joana" min="0" max="16" value="1" required></td>
+                </tr>
+
+                <!-- Aluno 2: Maria do Socorro -->
+                <tr>
+                    <td>Maria do Socorro</td>
+                    <td><input type="number" name="p1_maria" min="0" max="10" step="0.1" value="9.4" required></td>
+                    <td><input type="number" name="p2_maria" min="0" max="10" step="0.1" value="9.0" required></td>
+                    <td><input type="number" name="exame_maria" min="0" max="10" step="0.1"></td>
+                    <td><input type="number" name="media_maria" value="9.2" readonly=""></td>
+                    <td><input type="number" name="faltas_maria" min="0" max="16" value="0" required></td>
+                </tr>
+
+                <!-- Aluno 3: Pedro Santos -->
+                <tr>
+                    <td>Pedro Santos</td>
+                    <td><input type="number" name="p1_pedro" min="0" max="10" step="0.1" value="6.0" required></td>
+                    <td><input type="number" name="p2_pedro" min="0" max="10" step="0.1" value="5.0" required></td>
+                    <td><input type="number" name="exame_pedro" min="0" max="10" step="0.1" value="7.5"></td>
+                    <td><input type="number" name="media_pedro" value="6.5" readonly=""></td>
+                    <td><input type="number" name="faltas_pedro" min="0" max="16" value="0" required></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Botões -->
+        <div class="botoes">
+            <button type="submit">Salvar</button>
+            <button type="reset">Limpar</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
