@@ -269,6 +269,109 @@
             campoMedia.value = media;
         }
 
+        // Função para limpar o formulário
+        function limparFormulario() {
+            // Limpa todos os campos
+            document.getElementById('disciplina').value = '';
+            
+            // Limpa campos das notas (deixa vazio)
+            document.querySelector('input[name="p1_joana"]').value = '';
+            document.querySelector('input[name="p2_joana"]').value = '';
+            document.querySelector('input[name="exame_joana"]').value = '';
+            
+            document.querySelector('input[name="p1_maria"]').value = '';
+            document.querySelector('input[name="p2_maria"]').value = '';
+            document.querySelector('input[name="exame_maria"]').value = '';
+            
+            document.querySelector('input[name="p1_pedro"]').value = '';
+            document.querySelector('input[name="p2_pedro"]').value = '';
+            document.querySelector('input[name="exame_pedro"]').value = '';
+            
+            // Limpa campos de faltas
+            document.querySelector('input[name="faltas_joana"]').value = '';
+            document.querySelector('input[name="faltas_maria"]').value = '';
+            document.querySelector('input[name="faltas_pedro"]').value = '';
+            
+            // Limpa campos de média
+            document.querySelector('input[name="media_joana"]').value = '';
+            document.querySelector('input[name="media_maria"]').value = '';
+            document.querySelector('input[name="media_pedro"]').value = '';
+            
+            // Limpa estilos de validação
+            const todosCampos = document.querySelectorAll('input, select');
+            todosCampos.forEach(campo => {
+                campo.style.borderColor = '';
+                campo.style.backgroundColor = '';
+            });
+        }
+
+        // Função para filtrar por disciplina
+        function filtrarPorDisciplina() {
+            const disciplina = document.getElementById('disciplina').value;
+            
+            // Limpa todos os campos ao mudar de disciplina
+            limparFormulario();
+            
+            // Carrega notas específicas da disciplina
+            if (disciplina === 'intro_info') {
+                // Notas para Introdução à Informática
+                carregarNotasDisciplina('intro_info');
+            } else if (disciplina === 'ling_prog') {
+                // Notas para Linguagens de Programação
+                carregarNotasDisciplina('ling_prog');
+            } else if (disciplina === 'prog_comp') {
+                // Notas para Programação de Computadores
+                carregarNotasDisciplina('prog_comp');
+            }
+        }
+
+        // Função para carregar notas específicas de cada disciplina
+        function carregarNotasDisciplina(disciplina) {
+            const notas = {
+                'intro_info': {
+                    joana: { p1: '7.5', p2: '8.0', exame: '', faltas: '2' },
+                    maria: { p1: '9.0', p2: '8.5', exame: '', faltas: '0' },
+                    pedro: { p1: '6.5', p2: '7.0', exame: '6.0', faltas: '3' }
+                },
+                'ling_prog': {
+                    joana: { p1: '8.5', p2: '9.0', exame: '', faltas: '1' },
+                    maria: { p1: '9.5', p2: '9.2', exame: '', faltas: '0' },
+                    pedro: { p1: '7.0', p2: '6.5', exame: '8.0', faltas: '2' }
+                },
+                'prog_comp': {
+                    joana: { p1: '8.0', p2: '7.0', exame: '', faltas: '1' },
+                    maria: { p1: '9.4', p2: '9.0', exame: '', faltas: '0' },
+                    pedro: { p1: '6.0', p2: '5.0', exame: '7.5', faltas: '0' }
+                }
+            };
+
+            const notasDisciplina = notas[disciplina];
+            if (notasDisciplina) {
+                // Carrega notas da Joana
+                document.querySelector('input[name="p1_joana"]').value = notasDisciplina.joana.p1;
+                document.querySelector('input[name="p2_joana"]').value = notasDisciplina.joana.p2;
+                document.querySelector('input[name="exame_joana"]').value = notasDisciplina.joana.exame;
+                document.querySelector('input[name="faltas_joana"]').value = notasDisciplina.joana.faltas;
+                
+                // Carrega notas da Maria
+                document.querySelector('input[name="p1_maria"]').value = notasDisciplina.maria.p1;
+                document.querySelector('input[name="p2_maria"]').value = notasDisciplina.maria.p2;
+                document.querySelector('input[name="exame_maria"]').value = notasDisciplina.maria.exame;
+                document.querySelector('input[name="faltas_maria"]').value = notasDisciplina.maria.faltas;
+                
+                // Carrega notas do Pedro
+                document.querySelector('input[name="p1_pedro"]').value = notasDisciplina.pedro.p1;
+                document.querySelector('input[name="p2_pedro"]').value = notasDisciplina.pedro.p2;
+                document.querySelector('input[name="exame_pedro"]').value = notasDisciplina.pedro.exame;
+                document.querySelector('input[name="faltas_pedro"]').value = notasDisciplina.pedro.faltas;
+                
+                // Recalcula as médias
+                calcularMedia('joana');
+                calcularMedia('maria');
+                calcularMedia('pedro');
+            }
+        }
+
         // Adicionar eventos quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             // Campos de notas (prova 1, prova 2, exame)
@@ -297,9 +400,21 @@
             // Validação do formulário
             const form = document.querySelector('form');
             form.addEventListener('submit', function(event) {
-                const camposObrigatorios = document.querySelectorAll('input[required], select[required]');
                 let valido = true;
-
+                
+                // Valida disciplina
+                const disciplina = document.getElementById('disciplina');
+                if (!disciplina.value || disciplina.value === '') {
+                    disciplina.style.borderColor = '#e74c3c';
+                    disciplina.style.backgroundColor = '#ffeaea';
+                    valido = false;
+                } else {
+                    disciplina.style.borderColor = '';
+                    disciplina.style.backgroundColor = '';
+                }
+                
+                // Valida campos obrigatórios
+                const camposObrigatorios = document.querySelectorAll('input[required]');
                 camposObrigatorios.forEach(campo => {
                     if (!campo.value || campo.value === '') {
                         campo.style.borderColor = '#e74c3c';
@@ -316,6 +431,24 @@
                     alert('Por favor, preencha todos os campos obrigatórios!');
                 }
             });
+
+            // Evento para o botão reset
+            const resetButton = document.querySelector('button[type="reset"]');
+            resetButton.addEventListener('click', function(event) {
+                // Limpa os estilos de validação
+                const todosCampos = document.querySelectorAll('input, select');
+                todosCampos.forEach(campo => {
+                    campo.style.borderColor = '';
+                    campo.style.backgroundColor = '';
+                });
+
+                // Recalcula as médias após o reset (executa após o reset ser concluído)
+                setTimeout(function() {
+                    calcularMedia('joana');
+                    calcularMedia('maria');
+                    calcularMedia('pedro');
+                }, 10);
+            });
         });
     </script>
 </head>
@@ -327,10 +460,11 @@
     <form action="/salvar-notas" method="POST">
         <!-- Regra 1: Lista definida de disciplinas -->
         <label for="disciplina"><strong>Selecione a disciplina</strong></label>
-        <select id="disciplina" name="disciplina" required>
+        <select id="disciplina" name="disciplina" onchange="filtrarPorDisciplina()">
+            <option value="">Selecione uma disciplina</option>
             <option value="intro_info">Introdução à informática</option>
             <option value="ling_prog">Linguagens de Programação</option>
-            <option value="prog_comp" selected>Programação de Computadores</option>
+            <option value="prog_comp">Programação de Computadores</option>
         </select>
 
         <table>
@@ -349,33 +483,33 @@
                 <tr>
                     <td>Joana da Silva</td>
                     <!-- Regra 2 e 5: min="0", max="10", required -->
-                    <td><input type="number" name="p1_joana" min="0" max="10" step="0.1" value="8.0" required></td>
-                    <td><input type="number" name="p2_joana" min="0" max="10" step="0.1" value="7.0" required></td>
+                    <td><input type="number" name="p1_joana" min="0" max="10" step="0.1" required></td>
+                    <td><input type="number" name="p2_joana" min="0" max="10" step="0.1" required></td>
                     <td><input type="number" name="exame_joana" min="0" max="10" step="0.1"></td>
                     <!-- Regra 3: readonly -->
-                    <td><input type="number" name="media_joana" value="7.5" readonly=""></td>
+                    <td><input type="number" name="media_joana" readonly=""></td>
                     <!-- Regra 4 e 5: min="0", max="16", required -->
-                    <td><input type="number" name="faltas_joana" min="0" max="16" value="1" required></td>
+                    <td><input type="number" name="faltas_joana" min="0" max="16" required></td>
                 </tr>
 
                 <!-- Aluno 2: Maria do Socorro -->
                 <tr>
                     <td>Maria do Socorro</td>
-                    <td><input type="number" name="p1_maria" min="0" max="10" step="0.1" value="9.4" required></td>
-                    <td><input type="number" name="p2_maria" min="0" max="10" step="0.1" value="9.0" required></td>
+                    <td><input type="number" name="p1_maria" min="0" max="10" step="0.1" required></td>
+                    <td><input type="number" name="p2_maria" min="0" max="10" step="0.1" required></td>
                     <td><input type="number" name="exame_maria" min="0" max="10" step="0.1"></td>
-                    <td><input type="number" name="media_maria" value="9.2" readonly=""></td>
-                    <td><input type="number" name="faltas_maria" min="0" max="16" value="0" required></td>
+                    <td><input type="number" name="media_maria" readonly=""></td>
+                    <td><input type="number" name="faltas_maria" min="0" max="16" required></td>
                 </tr>
 
                 <!-- Aluno 3: Pedro Santos -->
                 <tr>
                     <td>Pedro Santos</td>
-                    <td><input type="number" name="p1_pedro" min="0" max="10" step="0.1" value="6.0" required></td>
-                    <td><input type="number" name="p2_pedro" min="0" max="10" step="0.1" value="5.0" required></td>
-                    <td><input type="number" name="exame_pedro" min="0" max="10" step="0.1" value="7.5"></td>
-                    <td><input type="number" name="media_pedro" value="6.5" readonly=""></td>
-                    <td><input type="number" name="faltas_pedro" min="0" max="16" value="0" required></td>
+                    <td><input type="number" name="p1_pedro" min="0" max="10" step="0.1" required></td>
+                    <td><input type="number" name="p2_pedro" min="0" max="10" step="0.1" required></td>
+                    <td><input type="number" name="exame_pedro" min="0" max="10" step="0.1"></td>
+                    <td><input type="number" name="media_pedro" readonly=""></td>
+                    <td><input type="number" name="faltas_pedro" min="0" max="16" required></td>
                 </tr>
             </tbody>
         </table>
@@ -383,7 +517,7 @@
         <!-- Botões -->
         <div class="botoes">
             <button type="submit">Salvar</button>
-            <button type="reset">Limpar</button>
+            <button type="button" onclick="limparFormulario()">Limpar</button>
         </div>
     </form>
 </div>
